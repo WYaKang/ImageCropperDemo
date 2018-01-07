@@ -11,6 +11,8 @@ import UIKit
 fileprivate let BOUNDCE_DURATION: TimeInterval = 0.3
 fileprivate let SCALE_FRAME_Y: CGFloat = 100.0
 
+fileprivate let kScreenSize: CGSize = UIScreen.main.bounds.size
+
 protocol ATImageCropperDelegate: class {
     func imageCropper(_ cropperViewController: ATImageCropperController, didFinished editedImage: UIImage)
     
@@ -24,36 +26,35 @@ class ATImageCropperController: UIViewController {
     let cropFrame: CGRect
     let limitRatio: CGFloat
     
-    fileprivate var originalImage: UIImage
-    fileprivate var editedImage: UIImage?
-    fileprivate var showImgView: UIImageView
+    fileprivate var originalImage : UIImage
+    fileprivate var editedImage   : UIImage?
+    fileprivate var showImgView   : UIImageView
     
-    fileprivate var overlayView: UIView
-    fileprivate var ratioView: UIView
+    fileprivate var overlayView   : UIView
+    fileprivate var ratioView     : UIView
     
     fileprivate var oldFrame = CGRect.zero
     fileprivate var largeFrame = CGRect.zero
     
     fileprivate var latestFrame = CGRect.zero
     
-    
-    deinit {
-    }
+    deinit { }
 
-    init(image originalImage: UIImage, cropFrame: CGRect, limitScaleRatio limitRatio: CGFloat) {
+    init(image originalImage: UIImage,
+         cropFrame: CGRect,
+         limitScaleRatio limitRatio: CGFloat)
+    {
         self.showImgView = UIImageView(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
-        self.originalImage = originalImage
-        self.overlayView = UIView(frame: UIScreen.main.bounds)
-        self.ratioView = UIView(frame: cropFrame)
-        self.cropFrame = cropFrame
-        self.limitRatio = limitRatio
+        self.originalImage  = originalImage
+        self.overlayView    = UIView(frame: UIScreen.main.bounds)
+        self.ratioView      = UIView(frame: cropFrame)
+        self.cropFrame      = cropFrame
+        self.limitRatio     = limitRatio
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         initView()
         initControlBtn()
     }
@@ -63,10 +64,15 @@ class ATImageCropperController: UIViewController {
     }
     
     func initControlBtn() {
-        let confirmBtn = UIButton(frame: CGRect(x: view.frame.size.width - 100.0, y: view.frame.size.height - 50.0, width: 100, height: 50))
-        confirmBtn.backgroundColor = UIColor.black
+        var iPhoneX_Home_Indicator_Height: CGFloat = 0
+        if kScreenSize.width == 375 && kScreenSize.height == 812 {
+            iPhoneX_Home_Indicator_Height = 34.0
+        }
+        
+        let confirmBtn = UIButton(frame: CGRect(x: view.frame.size.width - 100.0, y: view.frame.size.height - 50.0 - iPhoneX_Home_Indicator_Height, width: 100, height: 50))
+        confirmBtn.backgroundColor = UIColor.clear
         confirmBtn.titleLabel?.textColor = UIColor.white
-        confirmBtn.setTitle("OK", for: .normal)
+        confirmBtn.setTitle("确认", for: .normal)
         confirmBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
         confirmBtn.titleLabel?.textAlignment = .center
         confirmBtn.titleLabel?.textColor = UIColor.white
@@ -76,10 +82,10 @@ class ATImageCropperController: UIViewController {
         confirmBtn.addTarget(self, action: #selector(self.confirm), for: .touchUpInside)
         view.addSubview(confirmBtn)
         
-        let cancelBtn = UIButton(frame: CGRect(x: 0, y: view.frame.size.height - 50.0, width: 100, height: 50))
-        cancelBtn.backgroundColor = UIColor.black
+        let cancelBtn = UIButton(frame: CGRect(x: 0, y: view.frame.size.height - 50.0 - iPhoneX_Home_Indicator_Height, width: 100, height: 50))
+        cancelBtn.backgroundColor = UIColor.clear
         cancelBtn.titleLabel?.textColor = UIColor.white
-        cancelBtn.setTitle("Cancel", for: .normal)
+        cancelBtn.setTitle("取消", for: .normal)
         cancelBtn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
         cancelBtn.titleLabel?.textAlignment = .center
         cancelBtn.titleLabel?.lineBreakMode = .byWordWrapping

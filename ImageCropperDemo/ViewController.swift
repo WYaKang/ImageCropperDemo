@@ -49,30 +49,26 @@ extension ViewController: UIImagePickerControllerDelegate {
     //选择图片成功后代理
     func imagePickerController(_ picker: UIImagePickerController,
                                didFinishPickingMediaWithInfo info: [String : Any]) {
-        // 查看info对象
-        print(info)
-        
         // 图片控制器退出
         picker.dismiss(animated: true) {
             let image: UIImage = info[UIImagePickerControllerOriginalImage] as! UIImage
             let atVC = ATImageCropperController(image: image, cropFrame: CGRect(x: 0, y: 100, width: self.view.frame.size.width, height: self.view.frame.size.width), limitScaleRatio: 3.0)
-            self.present(atVC, animated: true, completion: nil)
-            
+            atVC.delegate = self
+            DispatchQueue.main.async {
+                self.present(atVC, animated: true, completion: nil)
+            }
         }
-        
-        
-//        //显示的图片
-//        let image:UIImage!
-//        if editSwitch.isOn {
-//            //获取编辑后的图片
-//            image = info[UIImagePickerControllerEditedImage] as! UIImage
-//        }else{
-//            //获取选择的原图
-//            image = info[UIImagePickerControllerOriginalImage] as! UIImage
-//        }
-//
-//        imageView.image = image
-        
+    }
+}
+
+extension ViewController: ATImageCropperDelegate {
+    func imageCropper(_ cropperViewController: ATImageCropperController, didFinished editedImage: UIImage) {
+        cropperViewController.dismiss(animated: true, completion: nil)
+        print(editedImage)
+    }
+    
+    func imageCropperDidCancel(_ cropperViewController: ATImageCropperController) {
+        cropperViewController.dismiss(animated: true, completion: nil)
     }
 }
 
