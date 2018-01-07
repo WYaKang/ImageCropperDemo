@@ -21,8 +21,8 @@ class ATImageCropperController: UIViewController {
     
     weak var delegate: ATImageCropperDelegate?
     
-    var cropFrame: CGRect = CGRect.zero
-    var limitRatio: CGFloat = 0.0
+    let cropFrame: CGRect
+    let limitRatio: CGFloat
     
     fileprivate var originalImage: UIImage
     fileprivate var editedImage: UIImage?
@@ -42,14 +42,13 @@ class ATImageCropperController: UIViewController {
 
     init(image originalImage: UIImage, cropFrame: CGRect, limitScaleRatio limitRatio: CGFloat) {
         self.showImgView = UIImageView(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
-        self.originalImage = UIImage()
+        self.originalImage = originalImage
         self.overlayView = UIView(frame: UIScreen.main.bounds)
         self.ratioView = UIView(frame: cropFrame)
-        super.init(nibName: nil, bundle: nil)
-        
         self.cropFrame = cropFrame
         self.limitRatio = limitRatio
-        self.originalImage = originalImage
+        super.init(nibName: nil, bundle: nil)
+        
     }
     
     override func viewDidLoad() {
@@ -156,18 +155,23 @@ class ATImageCropperController: UIViewController {
     }
     
     @objc func pinchView(_ pinchGestureRecognizer: UIPinchGestureRecognizer) {
-        if pinchGestureRecognizer.state == .began || pinchGestureRecognizer.state == .changed {
+        if pinchGestureRecognizer.state == .began ||
+            pinchGestureRecognizer.state == .changed
+        {
             showImgView.transform = (showImgView.transform.scaledBy(x: pinchGestureRecognizer.scale, y: pinchGestureRecognizer.scale))
             pinchGestureRecognizer.scale = 1
-        }
-        else if pinchGestureRecognizer.state == .ended {
+        } else if pinchGestureRecognizer.state == .ended {
             var newFrame: CGRect = showImgView.frame
             newFrame = handleScaleOverflow(newFrame)
             newFrame = handleBorderOverflow(newFrame)
-            UIView.animate(withDuration: BOUNDCE_DURATION, animations: {() -> Void in
+            UIView.animate(withDuration: BOUNDCE_DURATION,
+                           delay: 0,
+                           options: .curveEaseInOut,
+                           animations:
+            {
                 self.showImgView.frame = newFrame
                 self.latestFrame = newFrame
-            })
+            }, completion: nil)
         }
     }
     
@@ -258,8 +262,7 @@ class ATImageCropperController: UIViewController {
         let context: CGContext? = UIGraphicsGetCurrentContext()
         if let subImageRef = subImageRef {
             context?.draw(subImageRef, in: myImageRect)
-            
-            let smallImage = UIImage(cgImage: subImageRef) //UIImage(cgImage: subImageRef ?? CGImage())
+            let smallImage = UIImage(cgImage: subImageRef)
             UIGraphicsEndImageContext()
             return smallImage
         }
